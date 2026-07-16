@@ -1,0 +1,56 @@
+# Pondhawk.Rql
+
+> A standalone .NET Resource Query Language (RQL) by Pond Hawk Technologies: a filtering DSL with an AST, a strongly-typed fluent builder, a text parser, and serialization to LINQ expressions, parameterized SQL, RQL text, and English descriptions. Targets net8.0; the only dependencies are Sprache (parser combinators) and CommunityToolkit.Diagnostics.
+
+## Package
+
+Install: `dotnet add package Pondhawk.Rql`
+
+### Key types
+- `RqlFilterBuilder<TTarget>` (`Pondhawk.Rql.Builder`) — strongly-typed fluent builder: `.Where(expr).Equals(v).And(expr).GreaterThan(v)`; statics `.Create()`, `.All()`; instance `.Introspect(criteria)`
+- `RqlFilterBuilder` (non-generic) — untyped builder for runtime scenarios: `.Where("Field").Equals(v).And("Other").GreaterThan(v)`
+- `RqlLanguageParser` (`Pondhawk.Rql.Parser`) — `ToCriteria("(eq(Name,'John'),gt(Age,30))")` parses RQL text into the AST
+- `RqlTree` / `IRqlPredicate` / `RqlOperator` — the AST
+- Serializer extensions (`Pondhawk.Rql.Serialization`): `ToRql()`, `ToLambda<T>()`, `ToExpression<T>()`, `ToSqlWhere()`, `ToSqlQuery<T>()`, `ToDescription()`
+- `[Criterion]` / `BaseCriteria` / `ICriteria` — introspection (build filters from annotated objects)
+
+### Builder → multiple targets
+```csharp
+var filter = RqlFilterBuilder<Order>
+    .Where(o => o.Status).Equals("Active")
+    .And(o => o.Total).GreaterThan(100m);
+
+Func<Order, bool> predicate = filter.ToLambda<Order>();            // in-memory
+Expression<Func<Order, bool>> expr = filter.ToExpression<Order>(); // EF Core / IQueryable
+string rql = filter.ToRql();                                      // (eq(Status,'Active'),gt(Total,#100))
+var (sql, parms) = filter.ToSqlWhere();                           // "Status = {0} and Total > {1}"
+string english = filter.ToDescription();                          // "Status equals 'Active' and Total is greater than 100"
+```
+`ToLambda`/`ToExpression` accept `insensitive: true` for case-insensitive string comparisons. `ToSqlWhere`/`ToSqlQuery` default to indexed `{0}` placeholders; pass `indexed: false` for positional `?`.
+
+### RQL operators (builder method → RQL token)
+`Equals`→eq, `NotEquals`→ne, `LesserThan`→lt, `GreaterThan`→gt, `LesserThanOrEqual`→le, `GreaterThanOrEqual`→ge, `Between`→bt, `In`→in, `NotIn`→ni, `StartsWith`→sw, `Contains`→cn, `EndsWith`→ew, `IsNull`→nu, `IsNotNull`→nn.
+
+### Value prefixes in RQL text
+`@` DateTime (`@2025-01-15T00:00:00Z`), `#` decimal (`#99.95`), `'...'` string (escape `'` as `''`), bare for int/long/bool.
+
+### Introspection
+```csharp
+public class ProductSearch : BaseCriteria
+{
+    [Criterion(Operation = RqlOperator.Contains)] public string? Name { get; set; }
+    [Criterion(Name = "Price", Operand = OperandKind.From)] public decimal? MinPrice { get; set; }
+    [Criterion(Name = "Price", Operand = OperandKind.To)]   public decimal? MaxPrice { get; set; }
+}
+var filter = RqlFilterBuilder<Product>.Create().Introspect(search); // null props are skipped; From+To on one Name → Between
+```
+
+## Docs
+- [README.md](README.md) — overview and full examples
+- [src/Pondhawk.Rql/README.md](src/Pondhawk.Rql/README.md) — the NuGet package readme
+- [CLAUDE.md](CLAUDE.md) — repository/build guidance
+
+## Technical details
+- Targets `net8.0`; dependencies: Sprache, CommunityToolkit.Diagnostics
+- XML documentation ships inside the NuGet package (100% public-API coverage; consumers get IntelliSense)
+- MIT licensed; extracted from the pondhawktech/tools monorepo
