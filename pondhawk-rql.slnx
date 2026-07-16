@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Pondhawk.Rql/Pondhawk.Rql.csproj" />
+  </Folder>
+  <Folder Name="/build/">
+    <Project Path="build/Build.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Pondhawk.Rql.Tests/Pondhawk.Rql.Tests.csproj" />
+  </Folder>
+</Solution>
