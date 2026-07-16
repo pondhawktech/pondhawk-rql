@@ -65,17 +65,19 @@ var tree = RqlLanguageParser.ToCriteria("(eq(Name,'Widget'),gt(Quantity,10))");
 ### Build Filters from Annotated Objects
 
 ```csharp
-public class ProductFilter
-{
-    [Criterion("Name", RqlOperator.Equals)]
-    public string Name { get; set; }
+using Pondhawk.Rql.Criteria;
 
-    [Criterion("Quantity", RqlOperator.GreaterThan)]
+public class ProductFilter : BaseCriteria
+{
+    [Criterion(Name = "Name", Operation = RqlOperator.Equals)]
+    public string? Name { get; set; }
+
+    [Criterion(Name = "Quantity", Operation = RqlOperator.GreaterThan)]
     public int? MinQuantity { get; set; }
 }
 
 var criteria = new ProductFilter { Name = "Widget", MinQuantity = 5 };
-var filter = RqlFilterBuilder.Introspect(criteria);
+var filter = RqlFilterBuilder<Product>.Create().Introspect(criteria);
 ```
 
 ## RQL Operators
@@ -88,12 +90,12 @@ var filter = RqlFilterBuilder.Introspect(criteria);
 | GreaterThan | `.GreaterThan(v)` | `gt(Field,v)` | `Field > ?` |
 | LesserThanOrEqual | `.LesserThanOrEqual(v)` | `le(Field,v)` | `Field <= ?` |
 | GreaterThanOrEqual | `.GreaterThanOrEqual(v)` | `ge(Field,v)` | `Field >= ?` |
-| Between | `.Between(lo, hi)` | `bw(Field,lo,hi)` | `Field between ? and ?` |
+| Between | `.Between(lo, hi)` | `bt(Field,lo,hi)` | `Field between ? and ?` |
 | In | `.In(v1, v2, ...)` | `in(Field,v1,v2)` | `Field in (?,?)` |
 | NotIn | `.NotIn(v1, v2, ...)` | `ni(Field,v1,v2)` | `Field not in (?,?)` |
-| StartsWith | `.StartsWith(v)` | `sw(Field,v)` | `Field like ?%` |
-| Contains | `.Contains(v)` | `cn(Field,v)` | `Field like %?%` |
-| EndsWith | `.EndsWith(v)` | `ew(Field,v)` | `Field like %?` |
+| StartsWith | `.StartsWith(v)` | `sw(Field,v)` | `Field like ?` (param `v%`) |
+| Contains | `.Contains(v)` | `cn(Field,v)` | `Field like ?` (param `%v%`) |
+| EndsWith | `.EndsWith(v)` | `ew(Field,v)` | `Field like ?` (param `%v`) |
 | IsNull | `.IsNull()` | `nu(Field)` | `Field is null` |
 | IsNotNull | `.IsNotNull()` | `nn(Field)` | `Field is not null` |
 
