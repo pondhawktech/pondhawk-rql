@@ -1,7 +1,19 @@
-# Pondhawk.Rql
+<p align="center">
+  <img src="pht-small-logo.png" alt="Pondhawk.Rql" width="120" />
+</p>
 
-[![NuGet](https://img.shields.io/nuget/v/Pondhawk.Rql.svg)](https://www.nuget.org/packages/Pondhawk.Rql)
-[![Build](https://github.com/pondhawktech/pondhawk-rql/actions/workflows/build.yml/badge.svg)](https://github.com/pondhawktech/pondhawk-rql/actions/workflows/build.yml)
+<h1 align="center">Pondhawk.Rql</h1>
+
+<p align="center">
+  A Resource Query Language — filtering DSL with an AST, fluent builder, text parser, and RQL / LINQ / SQL / description serialization.
+</p>
+
+<p align="center">
+  <a href="https://github.com/pondhawktech/pondhawk-rql/actions/workflows/build.yml"><img src="https://github.com/pondhawktech/pondhawk-rql/actions/workflows/build.yml/badge.svg" alt="Build" /></a>
+  <img src="https://img.shields.io/badge/.NET-8.0-512bd4" alt=".NET 8" />
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" />
+  <a href="https://www.nuget.org/packages/Pondhawk.Rql"><img src="https://img.shields.io/nuget/v/Pondhawk.Rql?label=NuGet" alt="Pondhawk.Rql on NuGet" /></a>
+</p>
 
 A **Resource Query Language (RQL)** — a filtering DSL with an AST, a strongly-typed fluent builder, a text parser, and serialization to RQL text, LINQ expressions, parameterized SQL, and human-readable English. Fully standalone: its only dependencies are [Sprache](https://github.com/sprache/Sprache) (parser combinators) and CommunityToolkit.Diagnostics.
 
