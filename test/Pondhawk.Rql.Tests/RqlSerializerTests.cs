@@ -1,4 +1,7 @@
-﻿using Pondhawk.Rql.Builder;
+﻿// Copyright (c) Pond Hawk Technologies Inc. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Pondhawk.Rql.Builder;
 using Pondhawk.Rql.Parser;
 using Pondhawk.Rql.Serialization;
 using Shouldly;

@@ -1,4 +1,7 @@
-﻿namespace Pondhawk.Rql.Builder;
+﻿// Copyright (c) Pond Hawk Technologies Inc. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Pondhawk.Rql.Builder;
 
 /// <summary>
 /// Root AST node produced by parsing an RQL criteria string. Contains a list of <see cref="IRqlPredicate"/> nodes.
