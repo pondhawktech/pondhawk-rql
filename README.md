@@ -198,16 +198,16 @@ dotnet test pondhawk-rql.slnx
 
 ## Versioning & Packaging
 
-The package version is `major.minor` from [`src/Pondhawk.Rql/version.json`](src/Pondhawk.Rql/version.json) with a build number as the patch. Off-CI builds get a `-local` prerelease suffix.
+`<VersionPrefix>` in `src/Directory.Build.props` holds the last released version. Pushes to `main` publish `-ci.<n>` prereleases of the next patch to GitHub Packages. Local builds get a `-local` suffix.
 
 ```bash
-dotnet run --project build/Build.csproj -- --target=Pack --build-number=<n>   # writes ./artifacts/*.nupkg
+dotnet run --project build/Build.csproj -- --target=Pack   # writes ./artifacts/*.nupkg
 ```
 
 ## CI/CD
 
-- **`build.yml`** — on push/PR to `main`: build + test; on `main` it also packs and pushes to the `pondhawktech` GitHub Packages feed and uploads the `.nupkg` as an artifact.
-- **`publish.yml`** — manual `workflow_dispatch` that promotes a build's artifact to **[NuGet.org](https://www.nuget.org/packages/Pondhawk.Rql)** (uses nuget.org Trusted Publishing; no secret).
+- **`build.yml`** — on push/PR to `main`: build + test; on `main` it also packs and pushes as `-ci.<n>` prereleases to the `pondhawktech` GitHub Packages feed and uploads the `.nupkg` as an artifact.
+- **`publish.yml`** — a manual workflow on **NuGet.org** Trusted Publishing, with no secret. Choose `bump` (`none`, `patch`, `minor` or `major`). It bumps the version, then builds, tests, and packs. It pushes to nuget.org and GitHub Packages, commits the bump, and creates the tag and GitHub release. `dry_run` stops before it publishes, and can run on any branch. A push to nuget.org is permanent: a version can be unlisted but never replaced.
 
 ## History
 
