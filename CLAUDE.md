@@ -18,7 +18,7 @@ dotnet build src/Pondhawk.Rql/Pondhawk.Rql.csproj
 dotnet test pondhawk-rql.slnx
 
 # Pack NuGet packages (writes to ./artifacts)
-dotnet run --project build/Build.csproj -- --target=Pack --build-number=<n>
+dotnet run --project build/Build.csproj -- --target=Pack
 ```
 
 ## Project Setup
@@ -26,7 +26,7 @@ dotnet run --project build/Build.csproj -- --target=Pack --build-number=<n>
 - **.NET 8** targeting `net8.0` (`LangVersion=latestmajor`)
 - **Central package management** via `Directory.Packages.props`
 - **Nullable reference types** enabled; `TreatWarningsAsErrors` on; Meziantou analyzer enforced (`src/Directory.Build.props`)
-- Versioning: `src/Pondhawk.Rql/version.json` holds `major.minor`; the Cake `Pack` target appends the build number (and a `-local`/`-<suffix>` prerelease tag off CI).
+- Versioning: `<VersionPrefix>` in `src/Directory.Build.props` holds the last released version, and `publish.yml` bumps it. Pushes to `main` publish `-ci.<n>` prereleases of the next patch; a local `Pack` gets `-local`.
 
 ## Architecture
 
@@ -52,4 +52,4 @@ This project was extracted from the [pondhawktech/tools](https://github.com/pond
 ## CI/CD
 
 - `.github/workflows/build.yml` — builds, tests, packs, and pushes to the pondhawk GitHub Packages feed on pushes to `main`; uploads `.nupkg` artifacts.
-- `.github/workflows/publish.yml` — `workflow_dispatch` that promotes a build's artifacts to **NuGet.org** (uses nuget.org Trusted Publishing; no secret).
+- `.github/workflows/publish.yml` — `workflow_dispatch` that bumps the version and releases to **NuGet.org** (uses nuget.org Trusted Publishing; no secret).
