@@ -52,4 +52,4 @@ This project was extracted from the [pondhawktech/tools](https://github.com/pond
 ## CI/CD
 
 - `.github/workflows/build.yml` — builds, tests, packs, and pushes to the pondhawk GitHub Packages feed on pushes to `main`; uploads `.nupkg` artifacts.
-- `.github/workflows/publish.yml` — `workflow_dispatch` that promotes a build's artifacts to **NuGet.org** (requires the `NUGET_ORG_API_KEY` repo secret).
+- `.github/workflows/publish.yml` — `workflow_dispatch` that promotes a build's artifacts to **NuGet.org** (uses nuget.org Trusted Publishing; no secret).
