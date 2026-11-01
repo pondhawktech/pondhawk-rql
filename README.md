@@ -207,7 +207,7 @@ dotnet run --project build/Build.csproj -- --target=Pack --build-number=<n>   # 
 ## CI/CD
 
 - **`build.yml`** — on push/PR to `main`: build + test; on `main` it also packs and pushes to the `pondhawktech` GitHub Packages feed and uploads the `.nupkg` as an artifact.
-- **`publish.yml`** — manual `workflow_dispatch` that promotes a build's artifact to **[NuGet.org](https://www.nuget.org/packages/Pondhawk.Rql)** (uses the org-level `NUGET_ORG_API_KEY`).
+- **`publish.yml`** — manual `workflow_dispatch` that promotes a build's artifact to **[NuGet.org](https://www.nuget.org/packages/Pondhawk.Rql)** (uses nuget.org Trusted Publishing; no secret).
 
 ## History
 
