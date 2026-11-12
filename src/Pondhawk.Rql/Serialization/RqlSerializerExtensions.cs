@@ -14,7 +14,7 @@ namespace Pondhawk.Rql.Serialization
     /// Extension methods for serializing RQL filters to RQL text format, e.g. <c>(eq(Name,'John'),gt(Age,30))</c>.
     /// </summary>
     /// <remarks>
-    /// <para>Supported data types: string, bool, DateTime, decimal, short, int, long.</para>
+    /// <para>Supported data types: string, bool, DateTime, DateTimeOffset, DateOnly, decimal, double, Guid, short, int, long.</para>
     /// <para>Strings are single-quoted with <c>'</c> escaping (<c>''</c>). DateTime values are prefixed with <c>@</c>.
     /// Decimal values are prefixed with <c>#</c>. Boolean values are lower-cased.</para>
     /// </remarks>
@@ -75,6 +75,13 @@ namespace Pondhawk.Rql.Serialization
             typeMap[typeof(int)] = new TypeSpec { NeedsQuotes = false, Prefix = "", Formatter = DefaultFormatter };
             typeMap[typeof(long)] = new TypeSpec { NeedsQuotes = false, Prefix = "", Formatter = DefaultFormatter };
 
+            // Read back by the parser as DateTime (@), decimal (#) and string; RqlValueConverter turns them into the
+            // property's type when the filter becomes an expression.
+            typeMap[typeof(DateTimeOffset)] = new TypeSpec { NeedsQuotes = false, Prefix = "@", Formatter = _dateTimeOffsetFormatter };
+            typeMap[typeof(DateOnly)] = new TypeSpec { NeedsQuotes = false, Prefix = "@", Formatter = o => ((DateOnly)o).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
+            typeMap[typeof(double)] = new TypeSpec { NeedsQuotes = false, Prefix = "#", Formatter = o => ((double)o).ToString("R", CultureInfo.InvariantCulture) };
+            typeMap[typeof(Guid)] = new TypeSpec { NeedsQuotes = true, Prefix = "", Formatter = o => ((Guid)o).ToString("D") };
+
             TypeMap = typeMap;
 
 
@@ -91,6 +98,19 @@ namespace Pondhawk.Rql.Serialization
             var dtStr = time.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
 
             return dtStr;
+
+        }
+
+
+        private static string _dateTimeOffsetFormatter(object source)
+        {
+
+            Guard.IsNotNull(source);
+
+            if (source is not DateTimeOffset time)
+                throw new InvalidOperationException($"Object of type: {source.GetType().FullName} can not be cast to a DateTimeOffset");
+
+            return time.UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
 
         }
 

@@ -88,6 +88,15 @@ public static class DescriptionSerializerExtensions
         if (dataType == typeof(DateTime) && value is DateTime dt)
             return dt.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
+        if (value is DateTimeOffset dto)
+            return dto.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+        if (value is DateOnly day)
+            return day.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        if (value is double number)
+            return number.ToString("R", CultureInfo.InvariantCulture);
+
         if (dataType == typeof(bool))
             return value.ToString()?.ToLowerInvariant() ?? "false";
 

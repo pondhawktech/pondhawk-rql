@@ -26,7 +26,7 @@ string rql = filter.ToRql();                                      // (eq(Status,
 var (sql, parms) = filter.ToSqlWhere();                           // "Status = {0} and Total > {1}"
 string english = filter.ToDescription();                          // "Status equals 'Active' and Total is greater than 100"
 ```
-`ToLambda`/`ToExpression` accept `insensitive: true` for case-insensitive string comparisons. `ToSqlWhere`/`ToSqlQuery` default to indexed `{0}` placeholders; pass `indexed: false` for positional `?`.
+`ToLambda`/`ToExpression` accept `insensitive: true` for case-insensitive string comparisons, or `RqlExpressionOptions` (`CaseInsensitive`; `QueryProvider` for expressions EF Core translates — `ToUpper()` comparisons, `in` as typed equalities; `ValueConverter` for property types such as value objects, falling back to `RqlValueConverter.Convert`, which also handles nullable, enum, `DateTimeOffset`, `DateOnly`, `TimeOnly` and `Guid`). `ToSqlWhere`/`ToSqlQuery` default to indexed `{0}` placeholders; pass `indexed: false` for positional `?`.
 
 ### RQL operators (builder method → RQL token)
 `Equals`→eq, `NotEquals`→ne, `LesserThan`→lt, `GreaterThan`→gt, `LesserThanOrEqual`→le, `GreaterThanOrEqual`→ge, `Between`→bt, `In`→in, `NotIn`→ni, `StartsWith`→sw, `Contains`→cn, `EndsWith`→ew, `IsNull`→nu, `IsNotNull`→nn.

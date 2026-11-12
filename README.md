@@ -65,7 +65,7 @@ var filter = RqlFilterBuilder<Product>
 | `.IsNull()` | `nu(Field)` | `Field is null` |
 | `.IsNotNull()` | `nn(Field)` | `Field is not null` |
 
-Values support `string`, `bool`, `short`, `int`, `long`, `decimal`, and `DateTime`. For `like` operators the `%` wildcards live in the **parameter value**, so the query stays fully parameterized.
+Values support `string`, `bool`, `short`, `int`, `long`, `decimal`, and `DateTime` in the fluent builder; an untyped `RqlPredicate` also carries `DateTimeOffset`, `DateOnly`, `double` and `Guid` (see [Expression Options](#expression-options)). For `like` operators the `%` wildcards live in the **parameter value**, so the query stays fully parameterized.
 
 ## Serialization
 
@@ -106,6 +106,37 @@ string description = filter.ToDescription();
 ```csharp
 var predicate = filter.ToLambda<Product>(insensitive: true);
 ```
+
+## Expression Options
+
+`ToExpression` and `ToLambda` also take `RqlExpressionOptions`, for expressions that run against a LINQ query provider
+or compare with properties of types RQL cannot convert to by itself:
+
+```csharp
+var options = new RqlExpressionOptions
+{
+    CaseInsensitive = true,   // starts with / contains / ends with ignore case
+    QueryProvider = true,     // only what a provider such as EF Core translates
+    ValueConverter = (value, type) => type == typeof(Sku) ? new Sku((string)value) : RqlValueConverter.Convert(value, type),
+};
+
+var results = dbContext.Products.Where(filter.ToExpression<Product>(options));
+```
+
+| Option | Effect |
+|---|---|
+| `CaseInsensitive` | String comparisons ignore case |
+| `QueryProvider` | A case-insensitive comparison upper-cases both sides (`ToUpper()`) instead of using a `StringComparison` overload, and `in` / `not in` become equalities typed to the property joined with or, instead of a list of boxed values: both translate to SQL |
+| `ValueConverter` | Converts an operand to the property's type when they differ; fall back to `RqlValueConverter.Convert` for the types you do not handle |
+
+The built-in conversion (`RqlValueConverter.Convert`) converts what `Convert.ChangeType` converts, and also nullable
+properties, enums (by name or number), `DateTimeOffset`, `DateOnly`, `TimeOnly` and `Guid`. A `DateTime` of unspecified
+kind becomes a UTC `DateTimeOffset`. The `ToExpression(bool insensitive)` overload builds the same expressions as
+before.
+
+`ToRql` and `ToDescription` also write `DateTimeOffset` and `DateOnly` (as `@` values), `double` (as `#`) and `Guid`
+(quoted); the parser reads them back as `DateTime`, `decimal` and string, which the conversion turns into the
+property's type.
 
 ## Parsing
 
@@ -180,7 +211,7 @@ var (sql, args) = filter.ToSqlWhere();
 
 ```
 src/Pondhawk.Rql/         The library (net8.0)
-test/Pondhawk.Rql.Tests/  xUnit tests (250 tests)
+test/Pondhawk.Rql.Tests/  xUnit tests (261 tests)
 build/                    Cake (Frosting) build script
 .github/workflows/        build.yml (build/test/pack → GitHub Packages) + publish.yml (→ NuGet.org)
 ```
