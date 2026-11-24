@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="Cake.Frosting" Version="6.3.0" />
+    <PackageVersion Include="Cake.Frosting" Version="7.0.0" />
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.15" />
     <PackageVersion Include="CommunityToolkit.Diagnostics" Version="8.4.2" />
     <PackageVersion Include="Sprache" Version="2.3.1" />
